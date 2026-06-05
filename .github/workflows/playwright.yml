@@ -1,7 +1,17 @@
 name: Centralized Playwright Tests
 
 on:
-  workflow_dispatch: # This adds the "Run" button on GitHub for your co-workers
+  workflow_dispatch:
+    inputs:
+      test_suite:
+        description: 'Select the test suite to run'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - 'all'
+          - 'smoke'
+          - 'example'
 
 jobs:
   test:
@@ -21,12 +31,19 @@ jobs:
       run: npx playwright install --with-deps
       
     - name: Run Playwright tests
-      run: npx playwright test
+      run: |
+        if [ "${{ github.event.inputs.test_suite }}" = "smoke" ]; then
+          npx playwright test smokeTest.spec.ts
+        elif [ "${{ github.event.inputs.test_suite }}" = "example" ]; then
+          npx playwright test example.spec.ts
+        else
+          npx playwright test
+        fi
       
     - name: Upload Test Report for the Team
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: playwright-report
+        name: playwright-report-${{ github.event.inputs.test_suite }}
         path: playwright-report/
         retention-days: 30
