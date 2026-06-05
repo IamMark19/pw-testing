@@ -35,14 +35,14 @@ export class RequestHandler {
         return this
     }
 
-    getUrl(){
+    private getUrl(){
         
         const url = new URL(`${this.baseUrl ?? this.defaultBaseUrl}${this.apiPath}`);
        
         for (const [key, value] of Object.entries(this.queryParams)) {
             url.searchParams.append(key, String(value));
         }
-         console.log(url.toString());
-        return url;
+        
+        return url.toString();
     }
 }

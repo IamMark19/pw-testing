@@ -32,7 +32,7 @@ test('get All Articles', async ({ request }) => {
 
 
 test('create new article', async ({ request }) => {
-  const articleTitle = 'New Article mark it down 1';
+  const articleTitle = 'New Article mark it down 1115';
 
   
   const headers = { 'Authorization': `Token ${token}` };
@@ -68,6 +68,15 @@ test('create new article', async ({ request }) => {
   
   const responseArticleBody = await responseArticle.json();
   expect(responseArticleBody.article).toHaveProperty('title', articleTitle);
+
+ 
+  // 3. Delete the article using its specific slug
+  const deleteResponse = await request.delete(`${baseUrl}/articles/${articleSlug}`, { headers });
+  expect(deleteResponse.status()).toEqual(204);
+
+  // 4. Verify Deletion (Expecting a 404 Not Found)
+  const responseAfterDelete = await request.get(`${baseUrl}/articles/${articleSlug}`, { headers });
+  expect(responseAfterDelete.status()).toEqual(404);
 });
 
 test('delete article', async ({ request }) => {
